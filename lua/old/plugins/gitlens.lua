@@ -1,8 +1,7 @@
 return {
-  'pradhyu/gitlens.nvim',
-  -- enabled = false,
-  dependencies = { 'nvim-lua/plenary.nvim' },
+  'maraxor27/nvim-gitblame',
+  enabled = true,
   config = function()
-    -- require("gitlens").setup()
+    require("gitblame").setup({})
   end
 }
