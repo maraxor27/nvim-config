@@ -17,10 +17,10 @@ vim.filetype.add({
 	},
 })
 
-local gitlens = require("pack.gitlens")
-gitlens.setup({
-  show_time = 10000,
-  auto_show = true,
-  auto_show_delay = 10
-})
+-- local gitlens = require("pack.gitblame.lua")
+-- gitlens.setup({
+--  show_time = 10000,
+--  auto_show = true,
+--  auto_show_delay = 10
+-- })
 -- gitlens.toggle_auto_show()
