@@ -2,8 +2,7 @@ require("config.lazy")
 require("settings")
 -- plugins are install @ .local/share/nvim/lazy
 
-
-vim.cmd("colorscheme monokai-pro-spectrum")
+vim.cmd("colorscheme monokai-pro")
 
 -- Match .tq files to the torque language. It is important
 -- to add torque.vim into .config/nvim/syntax/ for this to
@@ -16,11 +15,3 @@ vim.filetype.add({
 		gni = "gn",
 	},
 })
-
--- local gitlens = require("pack.gitblame.lua")
--- gitlens.setup({
---  show_time = 10000,
---  auto_show = true,
---  auto_show_delay = 10
--- })
--- gitlens.toggle_auto_show()
