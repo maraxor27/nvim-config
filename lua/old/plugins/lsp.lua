@@ -72,5 +72,7 @@ return {
     vim.lsp.enable('pylsp')
     -- swift
     vim.lsp.enable('sourcekit')
+    -- rust
+    vim.lsp.enable('rust_analyzer')
   end,
 }
