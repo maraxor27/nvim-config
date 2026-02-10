@@ -8,7 +8,7 @@ end
 
 function torque_on_init(client, bufnr)
   local cwDir = vim.fn.getcwd()
-  print("Current working directory: " .. cwDir)
+  -- print("Current working directory: " .. cwDir)
   local torque_files
   if string.find(cwDir, "/v8([0-9%.%-])*$") == nil then
     -- print("torque lsp detected V8 repo")
@@ -25,14 +25,51 @@ function torque_on_init(client, bufnr)
   client:request('torque/fileList', { files = torque_files })
 end
 
-
+local clangd_progress = ''
+local file_status = ''
 
 return {
   "dundalek/lazy-lsp.nvim",
-  dependencies = { "neovim/nvim-lspconfig" },
+  dependencies = { 
+    "neovim/nvim-lspconfig",
+    "nvim-lualine/lualine.nvim"
+  },
   config = function()
+    require('lualine').setup({
+      sections = {
+        lualine_c = {
+          { function() 
+            if clangd_progress ~= '' and file_status ~= '' then
+              return clangd_progress .. ' | ' .. file_status
+            elseif clangd_progress ~= '' then
+              return clangd_progress
+            end
+            return file_status
+          end },
+        }
+      }
+    })
+
     vim.lsp.config('clangd', {
-      cmd = { 'clangd', '--background-index' }
+      cmd = { '/opt/homebrew/opt/llvm/bin/clangd', '--background-index', '--clang-tidy' },
+      init_options = { clangdFileStatus = true, progress = true, },
+      handlers = {
+        ['textDocument/clangd.fileStatus'] = function(_, result, ctx)
+          file_status = result.state or ''
+        end,
+        ['$/progress'] = function(_, result, ctx)
+          if result.token == "backgroundIndexProgress" then
+            local value = result.value
+            if value.kind == 'begin' then
+              clangd_progress = value.title or 'indexing...'
+            elseif value.kind == 'report' then
+              clangd_progress = 'indexing ' .. value.message .. ' files' or clangd_progress
+            elseif value.kind == 'end' then
+              clangd_progress = ''
+            end
+          end
+        end,
+      },
     })
 
     vim.lsp.config('torque_ls', {
@@ -53,22 +90,32 @@ return {
         end,
       }
     })
+    local util = require("lspconfig.util")
+    vim.lsp.config('sourcekit', { 
+      root_dir = function(fname) 
+        -- Block SourceKit in this directory
+        local no_source_kit_paths = { "v8/", "chromimu/", "linux" }
+        for _, path in pairs(no_source_kit_paths) do
+          if util.path.is_descendant(fname, path) then 
+            return nil
+          end
+        end
+        return util.root_pattern("Package.swift", ".git")(fname) end, })
 
     vim.diagnostic.enable = true
-    -- vim.diagnostic.config({
-    --   virtual_lines = true,
-    -- })
+
     -- bind grd to goto definition
     vim.keymap.set('n', 'grd', function()
       vim.lsp.buf.definition()
     end)
+
     -- lua 
     vim.lsp.enable('lua_ls')
     -- c, c++
     vim.lsp.enable('clangd')
     -- v8 torque
     vim.lsp.enable('torque_ls')
-    -- python 
+    -- python
     vim.lsp.enable('pylsp')
     -- swift
     vim.lsp.enable('sourcekit')
