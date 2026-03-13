@@ -25,7 +25,7 @@ vim.g.maplocalleader = "\\"
 require("lazy").setup({
 	spec = {
 		-- original
-		{ import = "old.plugins" },
+		{ import = "plugins" },
 
 		-- add LazyVim and import its plugins
 		-- This installs most of the plugins
