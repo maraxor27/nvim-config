@@ -1,4 +1,4 @@
-function map(tbl, f)
+local function map(tbl, f)
     local t = {}
     for k,v in pairs(tbl) do
         t[k] = f(v)
@@ -6,7 +6,7 @@ function map(tbl, f)
     return t
 end
 
-function torque_on_init(client, bufnr)
+local function torque_on_init(client, bufnr)
   local cwDir = vim.fn.getcwd()
   -- print("Current working directory: " .. cwDir)
   local torque_files
@@ -30,7 +30,7 @@ local file_status = ''
 
 return {
   "dundalek/lazy-lsp.nvim",
-  dependencies = { 
+  dependencies = {
     "neovim/nvim-lspconfig",
     "nvim-lualine/lualine.nvim"
   },
@@ -99,7 +99,7 @@ return {
    })
 
     vim.lsp.config('clangd', {
-      cmd = { '/opt/homebrew/opt/llvm/bin/clangd', '--background-index', '--clang-tidy' },
+      cmd = { 'clangd', '--background-index', '--clang-tidy' },
       init_options = { clangdFileStatus = true, progress = true, },
       handlers = {
         ['textDocument/clangd.fileStatus'] = function(_, result, ctx)
@@ -139,12 +139,12 @@ return {
       }
     })
     local util = require("lspconfig.util")
-    vim.lsp.config('sourcekit', { 
-      root_dir = function(fname) 
+    vim.lsp.config('sourcekit', {
+      root_dir = function(fname)
         -- Block SourceKit in this directory
         local no_source_kit_paths = { "v8/", "chromimu/", "linux" }
         for _, path in pairs(no_source_kit_paths) do
-          if util.path.is_descendant(fname, path) then 
+          if util.path.is_descendant(fname, path) then
             return nil
           end
         end
