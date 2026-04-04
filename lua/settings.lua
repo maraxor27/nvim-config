@@ -27,3 +27,6 @@ o.termguicolors = true
 -- Make search case insensitive unless there is a upper case letter.
 o.ignorecase = true
 o.smartcase = true
+
+-- Wrap on word rather than on character
+o.linebreak = true
